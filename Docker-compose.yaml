@@ -1,0 +1,77 @@
+# Variable substitution are picked from shell environment
+
+version: '3'
+services:
+  db:
+    image: postgres:9.6
+    command: postgres -c 'max_connections=500'
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ./postgres/postgres_schema.sql:/docker-entrypoint-initdb.d/postgres_schema.sql
+    restart: always
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    # https://github.com/dmaze/docker-rabbitmq-example/blob/master/docker-compose.yml
+     # There is a prebuilt RabbitMQ image; see
+    # https://hub.docker.com/_/rabbitmq/ for details.
+    # This variant is built on Alpine Linux (it's smaller) and includes
+    # the management UI.
+    image: 'rabbitmq:3.8-management-alpine'
+    # These ports are exposed on the host; 'hostport:containerport'.
+    # You could connect to this server from outside with the *host's*
+    # DNS name or IP address and port 5672 (the left-hand side of the
+    # colon).
+    ports:
+      # The standard AMQP protocol port
+      - '5672:5672'
+      # HTTP management UI
+      - '15672:15672'
+      - '4369:4369'
+      - '25672:25672'
+    restart: always
+
+  customer-service:
+    # build:
+    #   dockerfile: customer-service/Dockerfile
+    #   context: .
+    image: 'customer_service'
+    ports:
+      - 20001:20001
+    depends_on:
+      - db
+      # - rabbitmq
+      # - billing_service
+      # - billing_worker_service
+    
+
+  billing_service:
+    # build:
+    #   dockerfile: billing_service/Dockerfile
+    #   context: .      
+    image: 'billing_service'    
+    ports:
+      - 20002:20002
+    depends_on:
+      - db
+    #   - rabbitmq
+    #   - billing_service
+    #   - billing_worker_service          
+
+  billing_worker_service:
+    # build:
+    #   dockerfile: billing_worker_service/Dockerfile
+    #   context: .    
+    image: 'billing_worker_service'      
+    ports:
+      - 20003:20003                      
+    depends_on:
+      - db

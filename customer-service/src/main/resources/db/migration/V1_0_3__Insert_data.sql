@@ -1,0 +1,1 @@
+INSERT into customer  (id,balance,firstname, lastname) values ('7274fd37-0c03-44f8-83a0-78ba6f501d1c','1500.00','Wole','Soyinka');
