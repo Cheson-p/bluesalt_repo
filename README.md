@@ -1,6 +1,6 @@
 # Bluesalt Repo
 ## This repo os for mini bluesalt task
-**Note: The services Customer, Billing and Billing Worker in this directory are separate services**
+**Note: The services Customer, Billing and Billing Worker in this directory are separate services**  
 To run this services :
 1: Clone this repo  
 2: Go to root direcory of each projects and build them ( Ensure you have maven installed ) i.e in /customer-service and run mvn clean install -Dmaven.test.skip=true, repeat this for all other services  
